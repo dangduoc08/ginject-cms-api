@@ -1,0 +1,73 @@
+# =====================
+# Go build artifacts
+# =====================
+/bin/
+/build/
+/dist/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# =====================
+# Go workspace / cache
+# =====================
+/vendor/
+/coverage/
+/tmp/
+*.cover
+*.prof
+
+# =====================
+# Environment variables / Secret
+# =====================
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# =====================
+# IDE / Editor
+# =====================
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# =====================
+# OS files
+# =====================
+.DS_Store
+Thumbs.db
+
+# =====================
+# Logs
+# =====================
+*.log
+logs/
+
+# =====================
+# GolangCI-Lint cache
+# =====================
+.golangci-lint/
+
+# =====================
+# Database / local data
+# =====================
+*.db
+*.sqlite
+*.sqlite3
+
+# =====================
+# Test artifacts
+# =====================
+test-results/
+
+# =====================
+# NodeJS
+# =====================
+node_modules

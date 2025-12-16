@@ -1,0 +1,63 @@
+package config
+
+import (
+	"fmt"
+	"reflect"
+	"strings"
+
+	"github.com/dangduoc08/ginject-cms-api/internal/common/slice"
+	"github.com/dangduoc08/ginject/ctx"
+	"github.com/dangduoc08/ginject/modules/config"
+	"github.com/go-playground/validator/v10"
+)
+
+var Env ConfigModel
+
+var ConfModule = config.Register(&config.ConfigModuleOptions{
+	IsGlobal:          true,
+	IsExpandVariables: true,
+	Hooks: []config.ConfigHookFn{
+		func(c config.ConfigService) {
+
+			// transform to proper types
+			dto, fieldLevels := c.Transform(ConfigModel{})
+
+			configDTO := dto.(ConfigModel)
+
+			if len(configDTO.DomainWhitelist) > 0 {
+				configDTO.DomainWhitelist = strings.Split(configDTO.DomainWhitelist[0], ",")
+			}
+			Env = configDTO
+			errMsgs := []string{}
+
+			// validate config values should be added correctly
+			v := validator.New()
+
+			err := v.Struct(configDTO)
+			if err != nil {
+				for _, err := range err.(validator.ValidationErrors) {
+					fieldLevel := slice.Find(fieldLevels, func(el ctx.FieldLevel, i int) bool {
+						return el.Field() == err.Field()
+					})
+
+					errMsgs = append(errMsgs, fmt.Sprintf("Field: %s, Error: must be %s", fieldLevel.Tag(), err.Tag()))
+				}
+			}
+
+			if len(errMsgs) > 0 {
+				panic(strings.Join(errMsgs, "\n       "))
+			}
+
+			// re-assign to config struct
+			dtoConfigType := reflect.TypeOf(configDTO)
+			for i := 0; i < dtoConfigType.NumField(); i++ {
+				field := dtoConfigType.Field(i)
+				fieldValue := reflect.ValueOf(configDTO).Field(i)
+				envKey := field.Tag.Get("bind")
+				if envKey != "" {
+					c.Set(envKey, fieldValue.Interface())
+				}
+			}
+		},
+	},
+})

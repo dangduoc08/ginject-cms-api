@@ -1,0 +1,23 @@
+services:
+  ginject-cms-api:
+    build:
+      context: ../../
+      dockerfile: deploy/docker/Dockerfile
+
+    container_name: ginject-cms-api
+
+    restart: unless-stopped
+
+    depends_on:
+      - postgres
+
+    env_file:
+      - ../../.env
+
+    # override .env
+    environment:
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+
+    ports:
+      - "${SERVER_PORT:-3005}:${SERVER_PORT:-3005}"
