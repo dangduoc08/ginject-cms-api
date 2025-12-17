@@ -1,0 +1,29 @@
+name: Test Github action
+
+on:
+  push:
+    branches:
+      - GO-2/setup-development-enviroment
+
+jobs:
+  lint:
+    name: Run linter
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Lint
+        run: make lint
+        shell: bash
+  
+  test:
+    name: Run tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Test
+        run: make test
+        shell: bash
